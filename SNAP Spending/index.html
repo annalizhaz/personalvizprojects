@@ -19,13 +19,13 @@
     var snapchart = "#snapchart"
     var filePath = "commodities-spending.tsv"
     var width = 400
-    var height = 500
+    var height = 600
     var margin = {top: 10, bottom: 10, left: 10, right: 10}
-    var vert_buffer = 0
-    var barspreadfactor = 3
-    var leftbar = String(parseInt(width/barspreadfactor))
-    var rightbar = String(parseInt((width/barspreadfactor)*(barspreadfactor-1)))
+    var vert_buffer = .5
+    var barspreadfactor = 4 // Must be larger that 2. Divides canvas and places bars at first and last divinding line
     var barwidth = 50
+    var leftbar = (width/barspreadfactor) - (barwidth/2)
+    var rightbar = (width/barspreadfactor)*(barspreadfactor-1) - (barwidth/2)
 
     // Draw canvas for chart
     var svg = d3.select(snapchart).append("svg")
@@ -36,7 +36,7 @@
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //uncertain
 
     // Find the x position from the ranking and other data
-    // Pass in relevant subset (s or ns) for set
+    // Pass in relevant subset (s or ns) for set as a string
 
     function position_calc(rank, set, data) {
       count = 0
@@ -47,8 +47,8 @@
           percent_above += d[set].percent
         };
       });
-      y_position = height*(percent_above/100)+vert_buffer*count; //issue with the way the vert buffer is factored in
-      return parseInt(y_position)
+      y_position = (height-(data.length*vert_buffer))*(percent_above/100)+vert_buffer*count;
+      return y_position
     };
 
     // Load data
@@ -72,7 +72,7 @@
 
       // Secondary processing of data. Is this necessary? Can it pull up?
 
-      var colors = d3.quantize(d3.interpolateRgb("rgb(136, 68, 153)", "rgb(244, 188, 66)"), data.length)
+      var colors = d3.quantize(d3.interpolateHclLong("#d83ee0", "#e03e3e"), data.length)
       colorpoint = 0
 
       console.log(colors)
@@ -101,7 +101,7 @@
           .attr("x", function (d) {return leftbar})
           .attr("y", function (d) {return d.s.ypos})
           .attr("width", barwidth)
-          .attr("height", function (d) {return height*(d.s.percent/100)})
+          .attr("height", function (d) {return (height-(data.length*vert_buffer))*(d.s.percent/100)})
           .attr("class", "snap")
           .style("fill", function (d) {return d.color});
 
@@ -112,7 +112,7 @@
           .attr("x", function (d) {return rightbar})
           .attr("y", function (d) {return d.ns.ypos})
           .attr("width", barwidth)
-          .attr("height", function (d) {return height*(d.ns.percent/100)})
+          .attr("height", function (d) {return (height-(data.length*vert_buffer))*(d.ns.percent/100)})
           .attr("class", "nosnap")
           .style("fill", function (d) {return d.color});
 
