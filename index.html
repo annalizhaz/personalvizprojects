@@ -1,0 +1,124 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>SNAP Spending</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/d3.min.js"></script>
+  <script src="colorbrewer.min.js"></script>
+
+</head>
+
+<body>
+  <div id="snapchart"></div>
+  <script type="text/javascript">
+    var snapchart = "#snapchart"
+    var filePath = "commodities-spending.tsv"
+    var width = 400
+    var height = 500
+    var margin = {top: 10, bottom: 10, left: 10, right: 10}
+    var vert_buffer = 0
+    var barspreadfactor = 3
+    var leftbar = String(parseInt(width/barspreadfactor))
+    var rightbar = String(parseInt((width/barspreadfactor)*(barspreadfactor-1)))
+    var barwidth = 50
+
+    // Draw canvas for chart
+    var svg = d3.select(snapchart).append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("shape-rendering", "geometricPrecision") //uncertain if needed
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //uncertain
+
+    // Find the x position from the ranking and other data
+    // Pass in relevant subset (s or ns) for set
+
+    function position_calc(rank, set, data) {
+      count = 0
+      percent_above = 0
+      data.forEach(function(d) {
+        if (d[set].rank < rank) {
+          count += 1
+          percent_above += d[set].percent
+        };
+      });
+      y_position = height*(percent_above/100)+vert_buffer*count; //issue with the way the vert buffer is factored in
+      return parseInt(y_position)
+    };
+
+    // Load data
+    d3.tsv(filePath, function(error, data) {
+
+      data.forEach(function(d) {
+        d.food = d.commodity
+
+        d.s = {
+          rank: parseInt(d.snap_rank),
+          spend: parseFloat(d.snap_spending),
+          percent: parseFloat(d.snap_pct_of_total)
+        }
+
+        d.ns = {
+          rank: parseInt(d.nonsnap_rank),
+          spend: parseFloat(d.nonsnap_spending),
+          percent: parseFloat(d.nonsnap_pct_of_total)
+        }
+      });
+
+      // Secondary processing of data. Is this necessary? Can it pull up?
+
+      var colors = d3.quantize(d3.interpolateRgb("rgb(136, 68, 153)", "rgb(244, 188, 66)"), data.length)
+      colorpoint = 0
+
+      console.log(colors)
+
+      data.forEach (function(d){
+
+      // Add y position variable (y.pos) for each snap and non-snap rectangle
+
+        d.s.ypos = position_calc(d.s.rank, "s", data)
+        d.ns.ypos = position_calc(d.ns.rank, "ns", data)
+
+      // Add color for each food type
+
+        d.color = colors[colorpoint]
+        colorpoint += 1
+
+      });
+
+
+      // Draw shapes for Snap
+
+      svg.selectAll("rect").filter(".snap")
+        .data(data)
+        .enter()
+        .append("rect") // first bar
+          .attr("x", function (d) {return leftbar})
+          .attr("y", function (d) {return d.s.ypos})
+          .attr("width", barwidth)
+          .attr("height", function (d) {return height*(d.s.percent/100)})
+          .attr("class", "snap")
+          .style("fill", function (d) {return d.color});
+
+      svg.selectAll("rect").filter(".nosnap")
+        .data(data)
+        .enter()
+        .append("rect") //second bar
+          .attr("x", function (d) {return rightbar})
+          .attr("y", function (d) {return d.ns.ypos})
+          .attr("width", barwidth)
+          .attr("height", function (d) {return height*(d.ns.percent/100)})
+          .attr("class", "nosnap")
+          .style("fill", function (d) {return d.color});
+
+
+    }); // Final data curly bracket
+
+  </script>
+</body>
+</html>
