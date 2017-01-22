@@ -264,7 +264,7 @@
     var filePath = "commodities-spending.tsv"
     var width = 300
     var height = 600
-    var margin = {top: 20, bottom: 10, left: 10, right: 10}
+    var margin = {top: 50, bottom: 10, left: 10, right: 20}
     var vert_buffer = .5
     var barwidth = 50
     var leftbar = margin.left
@@ -277,9 +277,9 @@
     var svg = d3.select(snapchart).append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
-      .attr("shape-rendering", "geometricPrecision") //uncertain if needed
+      .attr("shape-rendering", "geometricPrecision")
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); //uncertain
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Find the x position from the ranking and other data
     // Pass in relevant subset (s or ns) for set as a string
@@ -385,8 +385,6 @@
       var colors = d3.quantize(d3.interpolateHclLong("#d83ee0", "#e03e3e"), data.length)
       colorpoint = 0
 
-      console.log(colors)
-
       data.forEach (function(d){
 
       // Add y position variable (y.pos) for each snap and non-snap rectangle
@@ -408,6 +406,20 @@
 
 
       // Draw shapes for Snap
+
+      svg.append("text")
+        .attr("x", leftbar + barwidth/2)
+        .attr("y", -10)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "Filson Soft")
+        .text("SNAP")
+
+      svg.append("text")
+        .attr("x", rightbar + barwidth/2)
+        .attr("y", -10)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "Filson Soft")
+        .text("non-SNAP")
 
       svg.selectAll("rect").filter(".snap")
         .data(data)
@@ -457,6 +469,7 @@
 
 
     }); // Final data curly bracket
+
 
   </script>
 </body>
