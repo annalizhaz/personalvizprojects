@@ -13,9 +13,9 @@
 </head>
 
 <body>
-  <div>
-    <div id="snapchart" style="display: inline-block;"></div>
-    <svg id="snap_text" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" style="padding: 62px 37px;" width="324.59" height="474.45" viewBox="0 0 324.59 474.45">
+  <div style="margin: auto; padding: 20px; width: 700px;">
+    <div id="snapchart" style="display: inline-block;  float: left;"></div>
+    <svg id="snap_text" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" style="padding: 50px 15px;" width="324.59" height="474.45" viewBox="0 0 324.59 474.45">
       <defs>
         <style>
           .\30 8150496-683e-48c4-802f-247b4090c4c4 {
@@ -262,17 +262,15 @@
   <script type="text/javascript">
     var snapchart = "#snapchart"
     var filePath = "commodities-spending.tsv"
-    var width = 400
+    var width = 300
     var height = 600
-    var margin = {top: 10, bottom: 10, left: 10, right: 10}
+    var margin = {top: 20, bottom: 10, left: 10, right: 10}
     var vert_buffer = .5
-    var barspreadfactor = 4 // Must be larger that 2. Divides canvas and places bars at first and second dividing line, text at third
     var barwidth = 50
-    var leftbar = (width/barspreadfactor) - (barwidth/2)
-    var rightbar = (width/barspreadfactor)*(barspreadfactor-1) - (barwidth/2)
+    var leftbar = margin.left
+    var rightbar = width - barwidth
     var leftX = leftbar + barwidth
     var rightX = rightbar
-    //var smoothFactor = leftX + (rightbar-leftX)/2
     var smoothFactor = (rightbar-leftX)/2
 
     // Draw canvas for chart
