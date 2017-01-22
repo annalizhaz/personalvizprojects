@@ -28,8 +28,8 @@
     var rightbar = (width/barspreadfactor)*(barspreadfactor-1) - (barwidth/2)
     var leftX = leftbar + barwidth - 1
     var rightX = rightbar + 1
-    var midpoint = leftX + (rightbar-leftX)/2
-    var halfX = (rightbar-leftX)/2
+    //var smoothFactor = leftX + (rightbar-leftX)/2
+    var smoothFactor = (rightbar-leftX)/2
 
     // Draw canvas for chart
     var svg = d3.select(snapchart).append("svg")
@@ -133,8 +133,7 @@
             var leftY = d.s.ypos + d.s.hgt/2
             var rightY = d.ns.ypos + d.ns.hgt/2
             var halfY = Math.abs(d.s.ypos-d.ns.ypos)/2 + Math.min(leftY, rightY)
-            var bez_string = "M" + String(leftX) + "," + String(leftY) + "C" + String(leftX) + "," + String(leftY) + "," + String(leftX) + "," + String(halfY) + "," + String(midpoint) + "," + String(halfY) + "S" + String(rightX) + "," + String(rightY) + "," + String(rightX) + "," + String(rightY)
-            console.log(bez_string)
+            var bez_string = "M" + String(leftX) + "," + String(leftY) + "C" + String(leftX + smoothFactor) + "," + String(leftY) + "," + String(rightX - smoothFactor) + "," + String(rightY) + "," + String(rightX) + "," + String(rightY)
             return bez_string
           })
           .attr("stroke", function (d) {return d.color})
